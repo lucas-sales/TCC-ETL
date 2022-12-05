@@ -15,16 +15,16 @@ class RabbitmqHandler:
         settings.log.info("Configuring consumer")
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(settings.RABBITMQ_URL))
         self.channel = self.connection.channel()
-        self.channel.exchange_declare(exchange=settings.EXCHANGE,
-                                      exchange_type=settings.EXCHANGE_TYPE,
-                                      passive=False,
-                                      durable=True,
-                                      auto_delete=False)
+        # self.channel.exchange_declare(exchange=settings.EXCHANGE,
+        #                               exchange_type=settings.EXCHANGE_TYPE,
+        #                               passive=False,
+        #                               durable=True,
+        #                               auto_delete=False)
 
-        self.channel.queue_declare(queue=settings.QUEUE)
-        self.channel.queue_bind(queue=settings.QUEUE,
-                                exchange=settings.EXCHANGE,
-                                routing_key="hola")
+        # self.channel.queue_declare(queue=settings.QUEUE)
+        # self.channel.queue_bind(queue=settings.QUEUE,
+        #                         exchange=settings.EXCHANGE,
+        #                         routing_key="hola")
 
         def callback(ch, method, properties, body):
             # self.channel.basic_ack(delivery_tag=method.delivery_tag)
@@ -34,7 +34,7 @@ class RabbitmqHandler:
             self.channel.basic_cancel(consumer_tag=settings.CONSUMER_TAG)
             self.channel.stop_consuming()
 
-        self.channel.basic_consume(queue=settings.QUEUE,
+        self.channel.basic_consume(queue=settings.QUEUE_ETL,
                                    auto_ack=True,
                                    on_message_callback=callback,
                                    consumer_tag=settings.CONSUMER_TAG)
@@ -46,7 +46,7 @@ class RabbitmqHandler:
         except:
             settings.log.info("error in consumer")
 
-    def basic_producer(self, exchange, routing_key, body):
+    def basic_producer(self, exchange: str, routing_key: str, body: bytes):
         self.channel.basic_publish(exchange=exchange,
                                    routing_key=routing_key,
                                    body=body)
