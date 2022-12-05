@@ -1,11 +1,14 @@
+from abc import ABC
+
 from src.config import settings
 from src.services.extract.extract import ExtractAgent
 from src.handler.rabbitmq_handler import RabbitmqHandler
 from src.services.transform.trasform_csv import parse_dataframe
 from src.services.load.load_data import load
+from src.models.handler_strategy import HandlerStrategy
 
 
-class Handler:
+class Handler(ABC, HandlerStrategy):
     def __init__(self):
         self.extract_obj = ExtractAgent()
         self.mapping = {'extract_all': self.extract_all_handler}
@@ -15,7 +18,7 @@ class Handler:
         dt = self.extract_obj.extract_by_plugin()
         parsed_data = parse_dataframe(dt)
         print("Finish!")
-        # load(parsed_data)
+        load(parsed_data)
 
     def execute(self):
         self.rabbit_handler.basic_consume()

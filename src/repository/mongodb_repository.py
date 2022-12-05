@@ -1,7 +1,11 @@
+from abc import ABC
+
 from pymongo import MongoClient
 
+from src.models.mongodb_strategy import MongodbStrategy
 
-class MongoDBRepository:
+
+class MongoDBRepository(ABC, MongodbStrategy):
     def __init__(self, connection_string: str, database_name: str, ):
         self.connection_string = connection_string
         self.database_name = database_name

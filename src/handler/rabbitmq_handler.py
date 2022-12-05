@@ -1,9 +1,12 @@
+from abc import ABC
+
 import pika
 
 from src.config import settings
+from src.models.rabbitmq_strategy import RabbitmqStrategy
 
 
-class RabbitmqHandler:
+class RabbitmqHandler(ABC, RabbitmqStrategy):
     def __init__(self):
         self.connection = None
         self.channel = None
@@ -15,16 +18,6 @@ class RabbitmqHandler:
         settings.log.info("Configuring consumer")
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(settings.RABBITMQ_URL))
         self.channel = self.connection.channel()
-        # self.channel.exchange_declare(exchange=settings.EXCHANGE,
-        #                               exchange_type=settings.EXCHANGE_TYPE,
-        #                               passive=False,
-        #                               durable=True,
-        #                               auto_delete=False)
-
-        # self.channel.queue_declare(queue=settings.QUEUE)
-        # self.channel.queue_bind(queue=settings.QUEUE,
-        #                         exchange=settings.EXCHANGE,
-        #                         routing_key="hola")
 
         def callback(ch, method, properties, body):
             # self.channel.basic_ack(delivery_tag=method.delivery_tag)
@@ -43,8 +36,8 @@ class RabbitmqHandler:
         try:
             settings.log.info(' [*] Waiting for messages. To exit press CTRL+C')
             self.channel.start_consuming()
-        except:
-            settings.log.info("error in consumer")
+        except Exception as e:
+            settings.log.info(f'error in consumer: {e}')
 
     def basic_producer(self, exchange: str, routing_key: str, body: bytes):
         self.channel.basic_publish(exchange=exchange,
