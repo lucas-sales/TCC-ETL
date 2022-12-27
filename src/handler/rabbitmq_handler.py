@@ -6,7 +6,7 @@ from src.config import settings
 from src.models.rabbitmq_strategy import RabbitmqStrategy
 
 
-class RabbitmqHandler(ABC, RabbitmqStrategy):
+class RabbitmqHandler(RabbitmqStrategy, ABC):
     def __init__(self):
         self.connection = None
         self.channel = None

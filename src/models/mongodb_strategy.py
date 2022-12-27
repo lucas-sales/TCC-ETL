@@ -7,7 +7,7 @@ class MongodbStrategy(ABC):
         pass
 
     @abstractmethod
-    def save(self, data, collection_name):
+    def save_many(self, data, collection_name):
         pass
 
     @abstractmethod
