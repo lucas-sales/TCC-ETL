@@ -1,7 +1,9 @@
 from pandas import DataFrame
 
+from src.config import settings
 
-def parse_dataframe(data: DataFrame):
+
+def parse_dataframe(data: DataFrame) -> list[dict]:
     di = data.set_index("JobID").T.to_dict('list')
     document_list = []
     for key, value in di.items():
@@ -39,5 +41,7 @@ def parse_dataframe(data: DataFrame):
         }
 
         document_list.append(document)
+
+    settings.log.info(f'Data parsed')
     return document_list
 
